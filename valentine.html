@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Моя Валентинка 💘</title>
+  <style>
+    :root{
+      --bg1:#ffe6f2;
+      --bg2:#fff7fb;
+      --pink:#ff4d88;
+      --pink2:#ff80b3;
+      --text:#2b1b23;
+      --card:#ffffffcc;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 20% 20%, var(--bg2), var(--bg1));
+      overflow: hidden;
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -40px;
+      width: 18px;
+      height: 18px;
+      background: var(--pink2);
+      transform: rotate(45deg);
+      opacity: 0.75;
+      animation: floatUp linear infinite;
+    }
+
+    .heart::before,
+    .heart::after{
+      content:"";
+      position:absolute;
+      width: 18px;
+      height: 18px;
+      background: inherit;
+      border-radius: 50%;
+    }
+    .heart::before{ left:-9px; top:0; }
+    .heart::after{ left:0; top:-9px; }
+
+    @keyframes floatUp {
+      from { transform: translateY(0) rotate(45deg); }
+      to   { transform: translateY(-120vh) rotate(45deg); }
+    }
+
+    .card {
+      position: relative;
+      z-index: 2;
+      width: min(520px, 92vw);
+      padding: 28px 22px;
+      border-radius: 24px;
+      background: var(--card);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.12);
+      backdrop-filter: blur(8px);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 10px 0 8px;
+      font-size: clamp(28px, 4.5vw, 40px);
+    }
+
+    p {
+      margin: 0 0 18px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .name {
+      color: var(--pink);
+      font-weight: 800;
+    }
+
+    .buttons {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #yesBtn {
+      background: linear-gradient(180deg, var(--pink), #ff2f73);
+      color: white;
+      box-shadow: 0 12px 30px rgba(255, 77, 136, 0.35);
+    }
+
+    #yesBtn:hover {
+      transform: scale(1.05);
+    }
+
+    #noBtn {
+      background: white;
+      border: 1px solid rgba(0,0,0,0.08);
+      position: relative;
+    }
+
+    .result {
+      margin-top: 16px;
+      min-height: 48px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      overflow: hidden;
+    }
+
+    .confetti span{
+      position: absolute;
+      top: -10px;
+      width: 10px;
+      height: 16px;
+      animation: fall 1.6s linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(115vh) rotate(600deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hearts" id="hearts"></div>
+<div class="confetti" id="confetti"></div>
+
+<main class="card">
+  <h1>Любимая моя зайка 💘</h1>
+  <p>
+    Ты будешь моей Валентинкой?<br>
+    Обещаю бесконечные обнимашки, заботу и много-много любви ❤️
+  </p>
+
+  <div class="buttons">
+    <button id="yesBtn">Да 💖</button>
+    <button id="noBtn">Нет 😳</button>
+  </div>
+
+  <div class="result" id="result"></div>
+</main>
+
+<script>
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
+  const result = document.getElementById("result");
+  const confettiWrap = document.getElementById("confetti");
+
+  let yesScale = 1;
+  let noScale = 1;
+  let noClicks = 0;
+
+  function popConfetti() {
+    for (let i = 0; i < 120; i++) {
+      const s = document.createElement("span");
+      s.style.left = Math.random() * 100 + "vw";
+      s.style.background = ["#ff4d88","#ffcc66","#7ae7ff","#baff7a"][Math.floor(Math.random()*4)];
+      confettiWrap.appendChild(s);
+    }
+    setTimeout(() => confettiWrap.innerHTML = "", 2000);
+  }
+
+  yesBtn.addEventListener("click", () => {
+    result.textContent = "УРААА 💘 Я тебя безумно люблю!";
+    popConfetti();
+    yesBtn.disabled = true;
+    noBtn.disabled = true;
+  });
+
+  noBtn.addEventListener("click", () => {
+    noClicks++;
+
+    // YES grows moderately
+    yesScale += 0.25;
+    yesBtn.style.transform = `scale(${yesScale})`;
+
+    // NO shrinks
+    noScale -= 0.2;
+    if (noScale < 0.2) noScale = 0.2;
+    noBtn.style.transform = `scale(${noScale})`;
+
+    // After 3 clicks → disappear
+    if (noClicks >= 3) {
+      noBtn.style.display = "none";
+      result.textContent = "Ну всё… судьба решила 💘";
+    }
+  });
+</script>
+
+
+
+</body>
+</html>
+
